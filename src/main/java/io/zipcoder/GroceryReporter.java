@@ -5,22 +5,28 @@ import io.zipcoder.utils.Item;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class GroceryReporter {
     private final String originalFileText;
 
     public GroceryReporter(String jerksonFileName) {
         this.originalFileText = FileReader.readFile(jerksonFileName);
-      // System.out.println(originalFileText);
         List<Item> lstItems=new ArrayList<>();
         ItemParser objItemParser=new ItemParser();
        lstItems=objItemParser.parseItemList(this.originalFileText);
-       for(Item item:lstItems) System.out.println(item);
+        Map<String, List<Item>> map = groupBy(lstItems, Item::getName);
+        map.forEach((k, v) -> System.out.println(k + " => " + v));
 
 
+    }
+    public static <E, K> Map<K, List<E>> groupBy(List<E> list, Function<E, K> keyFunction) {
+        return Optional.ofNullable(list)
+                .orElseGet(ArrayList::new)
+                .stream()
+                .collect(Collectors.groupingBy(keyFunction));
     }
 
 

@@ -14,6 +14,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemParser {
+    private int errorCount=0;
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
     public List<Item> parseItemList(String valueToParse)
     {
         List<Item> items=new ArrayList<>();
@@ -23,34 +29,35 @@ public class ItemParser {
                 if(parseSingleItem(str)!=null)
                 items.add(parseSingleItem(str));
             } catch (ItemParseException e) {
-                throw new RuntimeException(e);
+                continue;
             }
         }
         return items;
     }
 
     public Item parseSingleItem(String singleItem) throws ItemParseException {
-       // String output=singleItem.replaceAll("##","");
-        try {
+
+        //try {
             Pattern pattern = Pattern.compile("[!;:@^*%#]");
             Matcher matcher = pattern.matcher(singleItem);
             while (matcher.find()) {
                 singleItem = matcher.replaceAll(" ");
             }
-           // System.out.println(singleItem);
             String[] pairs = singleItem.split(" +");
 
             if (pairs.length > 7) {
-             //   System.out.println(pairs.length);
-
                 Item item = new Item(pairs[1].toLowerCase(), Double.valueOf(pairs[3]),
                         pairs[5].toLowerCase(), pairs[7]);
                 return item;
             }
-        }
-        catch (Exception ex){
-            throw new ItemParseException();}
-       return null;
+            else {
+                errorCount++;
+                throw new ItemParseException();
+            }
+       // }
+//        catch (Exception ex){
+//            throw new ItemParseException();}
+//       return null;
 
 //        Pattern pattern1 = Pattern.compile("\\s+");
 //        Matcher matcher2 = pattern1.matcher(output);
